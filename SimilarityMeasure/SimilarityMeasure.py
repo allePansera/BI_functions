@@ -116,9 +116,10 @@ def similarity_join_function(table_a: pd.DataFrame, table_b: pd.DataFrame, attr_
                                     show_progress=False,
                                     l_out_attrs=[attr_a], r_out_attrs=[attr_b]
                                     )
-    SoloInAX = TX.loc[~TX['AX'].isin(INTERSEZIONE['l_AX'])][attr_a].drop_duplicates()
-    SoloInAY = TY.loc[~TY['AY'].isin(INTERSEZIONE['r_AY'])][[attr_b]].drop_duplicates()
+    SoloInAX = TX.loc[~TX[attr_a].isin(INTERSEZIONE[f'l_{attr_a}'])][attr_a].drop_duplicates()
+    SoloInAY = TY.loc[~TY[attr_b].isin(INTERSEZIONE[f'r_{attr_b}'])][[attr_b]].drop_duplicates()
     return len(INTERSEZIONE) / (len(SoloInAX) + len(SoloInAY) + len(INTERSEZIONE))
+
 
 
 

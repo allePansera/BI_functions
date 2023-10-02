@@ -2,3 +2,4 @@ pandas
 numpy
 py_stringmatching
 py_stringsimjoin
+tqdm
