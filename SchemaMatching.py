@@ -29,8 +29,8 @@ class SchemaMatching:
         self.dataset_a = dataset_a
         self.dataset_b = dataset_b
         # label pre-processing
-        self.__cols_label_pre_process(self.dataset_a)
-        self.__cols_label_pre_process(self.dataset_b)
+        # self.__cols_label_pre_process(self.dataset_a)
+        # self.__cols_label_pre_process(self.dataset_b)
         # sim. table pre-processor
         self.sim_table_empty = self.__sim_table_builder()
 
@@ -115,7 +115,12 @@ class SchemaMatching:
             sim_table['Sim. Score'] = sim_table.apply(overlap_coefficient_similarity_function, axis=1)
 
         if method == "SJ":
-            sim_table['Sim. Score'] = sim_table.apply(similarity_join_function, axis=1)
+            for index, row in self.sim_table_empty.iterrows():
+                attr_a = row['A']
+                attr_b = row['B']
+                sim_score = similarity_join_function(self.dataset_a.copy(), self.dataset_b.copy(),
+                                                                    attr_a, attr_b)
+                sim_table.at[index, 'Sim. Score'] = sim_score
 
         if method == "EXT_JAC_LEV":
             sim_table = self.dataset_a.copy().drop_duplicates().merge(self.dataset_b.copy().drop_duplicates(), how='cross')
