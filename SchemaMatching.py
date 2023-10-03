@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from flexmatcher import *
 from SimilarityMeasure.PreProcessing import string_pre_process
 from SimilarityMeasure.SimilarityMeasure import levenshtein_similarity_function
 from SimilarityMeasure.SimilarityMeasure import jaro_similarity_function
@@ -197,7 +198,20 @@ class SchemaMatching:
         sim_table_ensemble['SimAvg'] = sim_table_measure[sim_table_measure.columns].mean(axis=1)
         return sim_table_ensemble
 
+    def flex_matcher(self, source_list: list, data_mapping_list: list, local_schema: pd.DataFrame):
+        """
+        Return flex matcher after.
 
+        :param source_list: list of DataFrame to use for flex matcher classifier.
+        Expected a list o dataframe without indexes
+        :param data_mapping_list: list of mapping to consider for flex matcher attr similarities. Expected
+        a list of dictionary.
+        :param local_schema: final schema to compare. Expected a list o dataframe without indexes
+        :return: classifier prediction on new schema
+        """
+        fm = FlexMatcher(source_list, data_mapping_list, sample_size=100)
+        fm.train()
+        return fm.make_prediction(local_schema)
 
 
 
