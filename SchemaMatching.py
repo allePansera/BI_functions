@@ -24,8 +24,14 @@ class SchemaMatching:
     def __init__(self, dataset_a: pd.DataFrame, dataset_b: pd.DataFrame):
         """
         Constructor only initialize class attributes
-        :param dataset_a: first dataset to compare
-        :param dataset_b: second dataset to compare
+
+        Parameters
+        ----------
+        dataset_a: pd.DataFrame
+            first dataset to compare
+
+        dataset_b: pd.DataFrame
+            second dataset to compare
         """
         self.dataset_a = dataset_a
         self.dataset_b = dataset_b
