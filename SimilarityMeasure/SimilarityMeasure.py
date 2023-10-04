@@ -43,7 +43,8 @@ def jaro_winkler_similarity_function(x):
         """
     return jw.get_sim_score(string_pre_process(x["A"]), string_pre_process(x["B"]))
 
-def jaccard_similarity_function(table_a: pd.DataFrame, table_b :pd.DataFrame, attr_a, attr_b):
+
+def jaccard_similarity_function(table_a: pd.DataFrame, table_b: pd.DataFrame, attr_a, attr_b):
     """
     Overlap method to use in order to consider 2 attribute similarity based on values
     :param table_a: DataFrame A
@@ -82,7 +83,7 @@ def monge_elkann_similarity_function(x):
     return me.get_raw_score(tok.tokenize(string_pre_process(x["A"])), tok.tokenize(string_pre_process(x["B"])))
 
 
-def generalized_jaccard_similarity_function(table_a: pd.DataFrame, table_b :pd.DataFrame, attr_a, attr_b):
+def generalized_jaccard_similarity_function(table_a: pd.DataFrame, table_b: pd.DataFrame, attr_a, attr_b):
     """
     Overlap method to use in order to consider 2 attribute similarity based on values
     :param table_a: DataFrame A
@@ -119,9 +120,3 @@ def similarity_join_function(table_a: pd.DataFrame, table_b: pd.DataFrame, attr_
     SoloInAX = TX.loc[~TX[attr_a].isin(INTERSEZIONE[f'l_{attr_a}'])][attr_a].drop_duplicates()
     SoloInAY = TY.loc[~TY[attr_b].isin(INTERSEZIONE[f'r_{attr_b}'])][[attr_b]].drop_duplicates()
     return len(INTERSEZIONE) / (len(SoloInAX) + len(SoloInAY) + len(INTERSEZIONE))
-
-
-
-
-
-

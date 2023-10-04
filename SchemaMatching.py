@@ -18,8 +18,8 @@ from SimilarityMeasure.SimilarityMeasure import similarity_join_function
 
 class SchemaMatching:
     """Class for executing basic schema matching operations"""
-    SUPPORTED_METHOD = {"label": ["LEV", "JARO", "JARO_WINK", "JAC", "ME"],
-                        "value_overlap": ["JAC", "GEN_JAC", "OC", "EXT_JAC_LEV", "EXT_JAC_JAC", "SJ"]}
+    SUPPORTED_METHOD = {"label": ["LEV", "JARO", "JARO_WINK", "JAC", "ME", "OC"],
+                        "value_overlap": ["JAC", "GEN_JAC", "EXT_JAC_LEV", "EXT_JAC_JAC", "SJ"]}
 
     def __init__(self, dataset_a: pd.DataFrame, dataset_b: pd.DataFrame):
         """
@@ -85,6 +85,9 @@ class SchemaMatching:
         if method == "ME":
             sim_table['Sim. Score'] = sim_table.apply(monge_elkann_similarity_function, axis=1)
 
+        if method == "OC":
+            sim_table['Sim. Score'] = sim_table.apply(overlap_coefficient_similarity_function, axis=1)
+
         return sim_table
 
     def value_overlap_sim(self, method="JAC"):
@@ -109,26 +112,26 @@ class SchemaMatching:
             for index, row in self.sim_table_empty.iterrows():
                 attr_a = row['A']
                 attr_b = row['B']
-                sim_score = generalized_jaccard_similarity_function(self.dataset_a.copy(), self.dataset_b.copy(), attr_a, attr_b)
+                sim_score = generalized_jaccard_similarity_function(self.dataset_a.copy(), self.dataset_b.copy(),
+                                                                    attr_a, attr_b)
                 sim_table.at[index, 'Sim. Score'] = sim_score
-
-        if method == "OC":
-            sim_table['Sim. Score'] = sim_table.apply(overlap_coefficient_similarity_function, axis=1)
 
         if method == "SJ":
             for index, row in self.sim_table_empty.iterrows():
                 attr_a = row['A']
                 attr_b = row['B']
                 sim_score = similarity_join_function(self.dataset_a.copy(), self.dataset_b.copy(),
-                                                                    attr_a, attr_b)
+                                                     attr_a, attr_b)
                 sim_table.at[index, 'Sim. Score'] = sim_score
 
         if method == "EXT_JAC_LEV":
-            sim_table = self.dataset_a.copy().drop_duplicates().merge(self.dataset_b.copy().drop_duplicates(), how='cross')
+            sim_table = self.dataset_a.copy().drop_duplicates().merge(self.dataset_b.copy().drop_duplicates(),
+                                                                      how='cross')
             sim_table["Sim. Score"] = sim_table.apply(levenshtein_similarity_function(), axis=1)
 
         if method == "EXT_JAC_JAC":
-            sim_table = self.dataset_a.copy().drop_duplicates().merge(self.dataset_b.copy().drop_duplicates(), how='cross')
+            sim_table = self.dataset_a.copy().drop_duplicates().merge(self.dataset_b.copy().drop_duplicates(),
+                                                                      how='cross')
             sim_table["Sim. Score"] = sim_table.apply(jaccard_tokenize_similarity_function, axis=1)
 
         return sim_table
@@ -151,8 +154,10 @@ class SchemaMatching:
         for index, method in enumerate(methods):
             type = list(method.keys())[0]
             value = method[type]
-            if type == "label": sim_table_list.append(self.label_based_sim(method=value))
-            elif type == "value_overlap": sim_table_list.append(self.value_overlap_sim(method=value))
+            if type == "label":
+                sim_table_list.append(self.label_based_sim(method=value))
+            elif type == "value_overlap":
+                sim_table_list.append(self.value_overlap_sim(method=value))
 
         # build unique simTable with all sim. score
         sim_table = self.sim_table_empty.copy()
@@ -180,8 +185,10 @@ class SchemaMatching:
         for index, method in enumerate(methods):
             type = list(method.keys())[0]
             value = method[type]
-            if type == "label": sim_table_list.append(self.label_based_sim(method=value))
-            elif type == "value_overlap": sim_table_list.append(self.value_overlap_sim(method=value))
+            if type == "label":
+                sim_table_list.append(self.label_based_sim(method=value))
+            elif type == "value_overlap":
+                sim_table_list.append(self.value_overlap_sim(method=value))
 
         # build unique simTable with all sim. score
         sim_table = self.sim_table_empty.copy()
@@ -212,7 +219,3 @@ class SchemaMatching:
         fm = FlexMatcher(source_list, data_mapping_list, sample_size=100)
         fm.train()
         return fm.make_prediction(local_schema)
-
-
-
-
