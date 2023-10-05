@@ -92,6 +92,7 @@ class SchemaMatching:
             sim_table['Sim. Score'] = sim_table.apply(monge_elkann_similarity_function, axis=1)
 
         if method == "OC":
+            # using token-based to compute label-based similarity
             sim_table['Sim. Score'] = sim_table.apply(overlap_coefficient_similarity_function, axis=1)
 
         return sim_table
