@@ -23,7 +23,7 @@ class SchemaMatching:
 
     def __init__(self, dataset_a: pd.DataFrame, dataset_b: pd.DataFrame):
         """
-        Constructor only initialize class attributes
+        Constructor only initialize class attributes.
 
         Parameters
         ----------
