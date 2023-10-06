@@ -16,7 +16,6 @@ def global_match_table(local_schemas: list, global_schema: pd.DataFrame, sim_met
     global_matching_table = pd.DataFrame(columns=['GAT', 'SOURCE', 'LAT', 'SLAT', 'Sim. Score'])
 
     for y in tqdm(local_schemas.keys()):
-
         sm = SchemaMatching(global_schema, local_schemas[y])
         sim_table = sm.ensemble_sim(methods=sim_methods)
         sim_table = sim_table.rename(columns={score: 'Sim. Score'})
