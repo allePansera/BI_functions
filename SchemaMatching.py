@@ -182,7 +182,7 @@ class SchemaMatching:
 
         return sim_table
 
-    def ensemble_sim(self, methods=[]):
+    def ensemble_sim(self, methods=[], weights=[]):
         """
         This method build a similarity table considering more similarity measure
         :param methods: [{"value_overlap": "JAC"}, {"label": "LEV"}, ...]
@@ -218,6 +218,11 @@ class SchemaMatching:
         sim_table_ensemble['SimMin'] = sim_table_measure[sim_table_measure.columns].min(axis=1)
         sim_table_ensemble['SimMax'] = sim_table_measure[sim_table_measure.columns].max(axis=1)
         sim_table_ensemble['SimAvg'] = sim_table_measure[sim_table_measure.columns].mean(axis=1)
+        if len(weights)==len(sim_table_measure.columns) and np.sum(weights)==1:
+            # print(sim_table_measure[sim_table_measure.columns], weights)
+            sim_table_ensemble['SimWeight'] = np.sum(sim_table_measure[sim_table_measure.columns]*weights)
+        # weight approach
+        # print(sim_table_ensemble.head(5))
         return sim_table_ensemble
 
     def flex_matcher(self, source_list: list, data_mapping_list: list, local_schema: pd.DataFrame):

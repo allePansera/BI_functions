@@ -4,3 +4,4 @@ py_stringmatching
 py_stringsimjoin
 tqdm
 flexmatcher
+networkx

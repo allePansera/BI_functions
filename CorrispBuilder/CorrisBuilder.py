@@ -20,14 +20,15 @@ class CorrisBuilder:
         """
         return self.sim_table[self.sim_table["Sim. Score"] > self.threshold]
 
-    def top_k_method(self):
+    def top_k_method(self, side="A"):
         """
         Return per each attribute tok k similarities. Local compare method
         :return: pd.Dataframe instance filtered
         """
-        self.sim_table['Rank'] = self.sim_table.sort_values(['Sim. Score'], ascending=[False]).groupby('A').cumcount() + 1
-        self.sim_table.sort_values(['A', 'Rank'])
-        return self.sim_table[self.sim_table["Rank"] <= self.top_k].sort_values(['A', 'Rank'])
+        if side not in ["A", "B"]: raise Exception(f"Side '{side}' must be in ['A', 'B']")
+        self.sim_table['Rank'] = self.sim_table.sort_values(['Sim. Score'], ascending=[False]).groupby(side).cumcount() + 1
+        self.sim_table.sort_values([side, 'Rank'])
+        return self.sim_table[self.sim_table["Rank"] <= self.top_k].sort_values([side, 'Rank'])
 
     def symmetric_best_match_method(self):
         """
