@@ -34,6 +34,7 @@ def global_match_table(local_schemas: list, global_schema: pd.DataFrame, sim_met
         match_table = match_table[["A", "B", "Sim. Score"]]
         # a -> attr. of global schema
         # b -> attr. of local schema
+        match_table = CorrisBuilder.thresholding(match_table, 0.6)
 
         match_table.columns = ['GAT', 'LAT', 'Sim. Score']
         match_table['SOURCE'] = str(y)

@@ -35,6 +35,7 @@ def local_match_table(sources: list, sim_methods, corr_method, score="SimAvg"):
 
                 LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
                 LocalMatchingTableXY.columns = ['LAT_A', 'LAT_B', 'Sim. Score']
+                LocalMatchingTableXY = CorrisBuilder.thresholding(LocalMatchingTableXY, 0.6)
                 # si aggiungono i 2 nomi delle Local Sources matchate
                 LocalMatchingTableXY['SOURCE_A'] = x
                 LocalMatchingTableXY['SOURCE_B'] = y
@@ -47,7 +48,7 @@ def local_match_table(sources: list, sim_methods, corr_method, score="SimAvg"):
     return local_matching_table
 
 
-def clustering_chiusura_transitiva(match_table, nodi):
+def clustering_componenti_connessi(match_table, nodi):
     match_table.columns = ['A', 'B']
 
     Singleton = set(nodi) - set(match_table['A']).union(set(match_table['B']))
@@ -100,7 +101,7 @@ def to_GMM(GMTA: pd.DataFrame):
 def schema_integration(sources, sim_methods, corr_method, score="SimAvg"):
     match_table = local_match_table(sources, sim_methods, corr_method, score)[['SLAT_A', 'SLAT_B']]
     nodi = [col for df in sources.values() for col in df.columns]
-    cluster = clustering_chiusura_transitiva(match_table, nodi)
+    cluster = clustering_componenti_connessi(match_table, nodi)
     LAT = genera_lat(sources)
 
     return from_cluster_to_GMT(cluster, LAT)

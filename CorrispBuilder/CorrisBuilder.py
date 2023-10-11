@@ -55,3 +55,6 @@ class CorrisBuilder:
             match = match.append(x, ignore_index=True)
         return match
 
+    @staticmethod
+    def thresholding(SimTable: pd.DataFrame, threshold: float):
+        return SimTable[SimTable["Sim. Score"] > threshold].sort_values(["Sim. Score"], ascending=[False])
