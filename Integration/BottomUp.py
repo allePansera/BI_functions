@@ -2,7 +2,42 @@ import pandas as pd
 from tqdm import tqdm
 from SchemaMatching import SchemaMatching
 from CorrispBuilder.CorrisBuilder import CorrisBuilder
+from threading import Thread
 import networkx as nx
+
+
+local_matching_table = None
+
+
+def local_match_table_thread(sources, x, y, sim_methods, corr_method, score):
+    global local_matching_table
+    sm = SchemaMatching(sources[x], sources[y])
+    LocalMatchingTableXY = sm.ensemble_sim(methods=sim_methods)
+    LocalMatchingTableXY = LocalMatchingTableXY.rename(columns={score: 'Sim. Score'})
+    LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
+
+    cb = CorrisBuilder(LocalMatchingTableXY, top_k=1)
+    if corr_method == "STAB_MARR":
+        LocalMatchingTableXY = cb.stable_marriage_method()
+    elif corr_method == "SYMM_MATCH":
+        LocalMatchingTableXY = cb.symmetric_best_match_method()
+    elif corr_method == "TOP_1":
+        LocalMatchingTableXY = cb.top_k_method()
+    else:
+        raise Exception(f"Corresp. method '{corr_method}' not supported")
+
+    LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
+    LocalMatchingTableXY.columns = ['LAT_A', 'LAT_B', 'Sim. Score']
+    LocalMatchingTableXY = CorrisBuilder.thresholding(LocalMatchingTableXY, 0.6)
+    # si aggiungono i 2 nomi delle Local Sources matchate
+    LocalMatchingTableXY['SOURCE_A'] = x
+    LocalMatchingTableXY['SOURCE_B'] = y
+    # e anche i SLAT
+    LocalMatchingTableXY['SLAT_A'] = LocalMatchingTableXY['SOURCE_A'] + '_' + LocalMatchingTableXY['LAT_A']
+    LocalMatchingTableXY['SLAT_B'] = LocalMatchingTableXY['SOURCE_B'] + '_' + LocalMatchingTableXY['LAT_B']
+
+    # per poi aggiungerlo alla LocalMatchingTable complessiva
+    local_matching_table = local_matching_table.append(LocalMatchingTableXY, sort=True)
 
 
 def local_match_table(sources: list, sim_methods, corr_method, score="SimAvg"):
@@ -14,37 +49,25 @@ def local_match_table(sources: list, sim_methods, corr_method, score="SimAvg"):
     :param score: SimMin/SimMax/SimAvg
     :return: match table global with each source
     """
+    global local_matching_table
     local_matching_table = pd.DataFrame(columns=['SOURCE_A', 'LAT_A', 'SOURCE_B', 'LAT_B', 'SLAT_A', 'SLAT_B', 'sim'])
+    thread_pool = []
+
     for x in tqdm(sources.keys()):
         for y in tqdm(sources.keys()):
             if (x <= y):  #  x <= y per calcolare anche i matching tra una sorgente e se stessa
-                sm = SchemaMatching(sources[x], sources[y])
-                LocalMatchingTableXY = sm.ensemble_sim(methods=sim_methods)
-                LocalMatchingTableXY = LocalMatchingTableXY.rename(columns={score: 'Sim. Score'})
-                LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
+                t = Thread(target=local_match_table_thread,
+                           args=(sources, x, y, sim_methods, corr_method, score))
+                thread_pool.append(t)
 
-                cb = CorrisBuilder(LocalMatchingTableXY, top_k=1)
-                if corr_method == "STAB_MARR":
-                    LocalMatchingTableXY = cb.stable_marriage_method()
-                elif corr_method == "SYMM_MATCH":
-                    LocalMatchingTableXY = cb.symmetric_best_match_method()
-                elif corr_method == "TOP_1":
-                    LocalMatchingTableXY = cb.top_k_method()
-                else:
-                    raise Exception(f"Corresp. method '{corr_method}' not supported")
+    # run all thread
+    for t in tqdm(thread_pool):
+        t.start()
 
-                LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
-                LocalMatchingTableXY.columns = ['LAT_A', 'LAT_B', 'Sim. Score']
-                LocalMatchingTableXY = CorrisBuilder.thresholding(LocalMatchingTableXY, 0.6)
-                # si aggiungono i 2 nomi delle Local Sources matchate
-                LocalMatchingTableXY['SOURCE_A'] = x
-                LocalMatchingTableXY['SOURCE_B'] = y
-                # e anche i SLAT
-                LocalMatchingTableXY['SLAT_A'] = LocalMatchingTableXY['SOURCE_A'] + '_' + LocalMatchingTableXY['LAT_A']
-                LocalMatchingTableXY['SLAT_B'] = LocalMatchingTableXY['SOURCE_B'] + '_' + LocalMatchingTableXY['LAT_B']
+    # wait for all thread end
+    for t in tqdm(thread_pool):
+        t.join()
 
-                # per poi aggiungerlo alla LocalMatchingTable complessiva
-                local_matching_table = local_matching_table.append(LocalMatchingTableXY, sort=True)
     return local_matching_table
 
 

@@ -48,9 +48,10 @@ for i in range(x):
 
 
 res = []
+gold_standard = pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/GoldStandardFull.csv').astype(str)
+
 for sim_methods in sim_combinations:
     global_match_table = schema_integration(SOURCES, sim_methods, corr_method, score)
-    gold_standard = pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/GoldStandardFull.csv').astype(str)
     final_result = valuta(match_indotti_GMT(gold_standard), match_indotti_GMT(global_match_table))
     res.append([final_result, sim_methods])
 
