@@ -2,6 +2,8 @@ pandas
 numpy
 py_stringmatching
 py_stringsimjoin
+py_entitymatching
+recordlinkage
 tqdm
 flexmatcher
 networkx
