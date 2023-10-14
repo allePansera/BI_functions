@@ -122,7 +122,7 @@ def to_GMM(GMTA: pd.DataFrame):
 
 
 def schema_integration(sources, sim_methods, corr_method, score="SimAvg"):
-    match_table = local_match_table(sources, sim_methods, corr_method, score)[['LAT_A', 'LAT_B']]
+    match_table = local_match_table(sources, sim_methods, corr_method, score)[['SLAT_A', 'SLAT_B']]
     nodi = [col for df in sources.values() for col in df.columns]
     cluster = clustering_componenti_connessi(match_table, nodi)
     LAT = genera_lat(sources)
