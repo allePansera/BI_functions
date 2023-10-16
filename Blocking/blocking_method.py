@@ -26,6 +26,7 @@ def equivalence_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs,
     # em.set_fk_ltable(GoldStandard, 'l_id')
     # em.set_fk_rtable(GoldStandard, 'r_id')
     ab = em.AttrEquivalenceBlocker()
+
     C = ab.block_tables(
         A, B,
         blocking_key, blocking_key,
@@ -124,6 +125,7 @@ def rule_based_blocker(A: pd.DataFrame, B: pd.DataFrame, rules_list, l_attrs, r_
     em.set_key(A, 'l_id')
     em.set_key(B, 'r_id')
     block_f = em.get_features_for_blocking(A, B, validate_inferred_attr_types=False)
+
     rb = em.RuleBasedBlocker()
     for and_rules in rules_list:
         or_rules = []
@@ -146,8 +148,21 @@ def rule_based_blocker_diff_type(A: pd.DataFrame, B: pd.DataFrame, rules_list, l
     """
     em.set_key(A, 'l_id')
     em.set_key(B, 'r_id')
+
+    # diff var type alignment (assume left right)
+    atypesA = em.get_attr_types(A)
+    atypesB = em.get_attr_types(B)
+
+    for rule in rules_list:
+        for r in rule:
+            attr_name = r.split("_")[0]
+            if atypesA[attr_name] != atypesB[attr_name]:
+                atypesB[attr_name] = atypesA[attr_name]
+
+
+
     block_f = em.get_features(A, B,
-                             em.get_attr_types(A), em.get_attr_types(B),
+                             atypesA, atypesB,
                              em.get_attr_corres(A, B),
                              em.get_tokenizers_for_blocking(),
                              em.get_sim_funs_for_blocking())
