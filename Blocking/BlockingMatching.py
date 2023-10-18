@@ -1,6 +1,7 @@
 import pandas as pd
 from .blocking_method import *
 from CorrispBuilder.CorrisBuilder import CorrisBuilder
+from copy import deepcopy
 import py_entitymatching as em
 
 
@@ -121,13 +122,29 @@ class BlockingMatching:
         creates 'or' constraint.
         :return: match table
         """
+        A = deepcopy(self.dataset_a).rename(columns={"l_id": "id"})
+        B = deepcopy(self.dataset_b).rename(columns={"r_id": "id"})
+
+        UNIONE = pd.DataFrame(columns=A.columns)
+        for x in [A, B]:
+            UNIONE = UNIONE.append(deepcopy(x))
+
+        A = deepcopy(UNIONE)
+        B = deepcopy(UNIONE)
+
+        A = A.rename(columns={'id': "l_id"})
+        B = B.rename(columns={'id': "r_id"})
+
+        em.set_key(A, 'l_id')
+        em.set_key(B, 'r_id')
+
         em.set_key(match_table, '_id')
-        em.set_ltable(match_table, self.dataset_a)
-        em.set_rtable(match_table, self.dataset_b)
+        em.set_ltable(match_table, A)
+        em.set_rtable(match_table, B)
         em.set_fk_ltable(match_table, 'l_id')
         em.set_fk_rtable(match_table, 'r_id')
-        em.set_fk_rtable(match_table, 'r_id')
-        F = em.get_features_for_matching(self.dataset_a, self.dataset_b, validate_inferred_attr_types=False)
+
+        F = em.get_features_for_matching(A, B, validate_inferred_attr_types=False)
         brm = em.BooleanRuleMatcher()
         rules_list = []
         for rules_inner_list in rules:

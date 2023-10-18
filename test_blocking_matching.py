@@ -2,23 +2,28 @@ from Blocking.EntityMatching import EntityMatching
 import pandas as pd
 
 
-path='http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/NCVR2/'
+# DATASET CLEAN
+path='http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/PPRL/'
 
 src_links = [
-path+'NCVR_AF_clean.csv',
-path+'NCVR_BF_clean.csv',
-path+'NCVR_CF_clean.csv']
+path+'cleanDatasetA3.csv',
+path+'cleanDatasetB3.csv',
+path+'cleanDatasetC3.csv']
 
 SOURCES = { 'S'+str(i+1) : pd.read_csv(link).astype(str) for i, link in enumerate(src_links) }
 
-GoldStandardCLEAN = pd.read_csv(path + "GoldStandardCLEAN2.csv")
+GoldStandard=pd.read_csv(path+ 'cleanGoldStandard3.csv')
+
+GoldStandard.columns=['l_id','r_id']
 
 
-# print(GoldStandardCLEAN.columns)
+
+
+# print(GoldStandard.columns)
 for s in SOURCES:
     # print(SOURCES[s].columns)
     # creazione di una variabile mix per avere confronto con nome e cognome assieme
-    SOURCES[s]['full_name'] = SOURCES[s]['first_name']+' '+SOURCES[s]['last_name']
+    SOURCES[s]['full_name'] = SOURCES[s]['given_name']+' '+SOURCES[s]['surname']
 
 # blocking rules - blocco su zip_code
 method = "overlap_blocking"
@@ -26,11 +31,8 @@ blocking_keys = ["full_name"]
 blocking_rules = []
 # matching rules
 matching_rules = [
-        [{"rule": "{}_{}_lev_sim(ltuple, rtuple) >= {}", "attr": "last_name", "score": "0.7"}, {"rule": "{}_{}_exm(ltuple, rtuple) == {}", "attr": "zip_code", "score": "1"}], # first and rule
-            # or
-        [{"rule": "{}_{}_lev_sim(ltuple, rtuple) >= {}", "attr": "last_name", "score": "0.3"}, {"rule": "{}_{}_lev_sim(ltuple, rtuple) >= {}", "attr": "first_name", "score": "0.3"}]
-] # second and rule
-
+        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "surname", "score": "0.3"}]
+]
 # l attrs to exclude
 omit_l_attrs = ["l_id"]
 # r attrs to exclude
