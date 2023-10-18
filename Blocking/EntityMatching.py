@@ -1,4 +1,4 @@
-from BlockingMatching import BlockingMatching
+from .BlockingMatching import BlockingMatching
 from CorrispBuilder.CorrisBuilder import CorrisBuilder
 from copy import deepcopy
 import pandas as pd
@@ -32,24 +32,25 @@ class EntityMatching:
         :return:
         """
 
-        MatchTable = pd.DataFrame(columns=['l_id', 'r_id', 'sim'])
+        MatchTable = pd.DataFrame(columns=['l_id', 'r_id', 'Sim. Score'])
 
         for x in self.sources.keys():
             for y in self.sources.keys():
                 if (x < y):  # x<=y nel caso dirty
-                    blck_mtch = BlockingMatching(self.sources[x], self.sources[y])
+                    blck_mtch = BlockingMatching(self.sources[x].rename(columns={"id": "l_id"}), self.sources[y].rename(columns={"id": "r_id"}))
                     candidate_set = blck_mtch.gen_blocking(method, blocking_keys, omit_l_attrs, omit_r_attrs, rules_blocking)
-                    match_table = blck_mtch.gen_matching(candidate_set, rules_matching, )
+                    match_table = blck_mtch.gen_matching(candidate_set, rules_matching)
+                    match_table_formatted = match_table.query("l_id!=r_id").rename(columns={"l_id": "A", "r_id": "B"})
                     # global mapping
-                    cb = CorrisBuilder(match_table.query("l_id!=r_id"))
+                    cb = CorrisBuilder(match_table_formatted)
                     if matching_method == "SYMM":
-                        MTxy = cb.symmetric_best_match_method()
+                        MTxy = cb.symmetric_best_match_method().rename(columns={"A": "l_id", "B": "r_id"})
                     elif matching_method == "STAB":
-                        MTxy = cb.stable_marriage_method()
+                        MTxy = cb.stable_marriage_method().rename(columns={"A": "l_id", "B": "r_id"})
                     else:
                         raise Exception(f"Matching method '{matching_method}' not supported")
 
-                    MatchTable = MatchTable.append(MTxy[['l_id', 'r_id', 'sim']], sort=True)
+                    MatchTable = MatchTable.append(MTxy[['l_id', 'r_id', 'Sim. Score']], sort=True)
         return MatchTable
 
 

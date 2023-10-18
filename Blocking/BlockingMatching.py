@@ -136,8 +136,8 @@ class BlockingMatching:
         for rule in rules_list:
             brm.add_rule(rule, F)
 
-        predictions = brm.predict(match_table, target_attr='pred_label', append=True)
-        MT = predictions[predictions.pred_label == 1]
+        predictions = brm.predict(match_table, target_attr='Sim. Score', append=True)
+        MT = predictions[predictions["Sim. Score"] == 1]
         return MT
 
 
