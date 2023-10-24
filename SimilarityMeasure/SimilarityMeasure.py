@@ -23,9 +23,10 @@ def levenshtein_similarity_function(x, col_a="A", col_b="B"):
     :param x: row to process
     :return: levenshtein similarity score
     """
-
-    if col_a not in x.columns if hasattr(x, "columns") else x.index: col_a += '_x'
-    if col_b not in x.columns if hasattr(x, "columns") else x.index: col_b += '_y'
+    a_cols = x.columns.to_list() if hasattr(x, "columns") else x.index.to_list()
+    b_cols = x.columns.to_list() if hasattr(x, "columns") else x.index.to_list()
+    if col_a not in a_cols: col_a += '_x'
+    if col_b not in b_cols: col_b += '_y'
     return lev.get_sim_score(string_pre_process(x[col_a]), string_pre_process(x[col_b]))
 
 
