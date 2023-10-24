@@ -42,7 +42,7 @@ class CorrisBuilder:
 
     def stable_marriage_method(self):
         """
-        Global method, the idea is similar to top_1 but with 1:1 correspondence
+        Global method, the idea is similar to top_1 but with 1:n correspondence
         :return: pd.DataFrame instance filtered
         """
         match = pd.DataFrame(columns=['A', 'B', 'Sim. Score'])
