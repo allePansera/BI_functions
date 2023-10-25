@@ -80,6 +80,7 @@ def CalcoloLocalMatchingTable(Sources: list,
                               combinerMinMaxAvg,
                               thresholdingT,
                               GlobalMapping):
+
     LocalMatchingTable = pd.DataFrame(columns=['SOURCE_A', 'LAT_A', 'SOURCE_B', 'LAT_B', 'SLAT_A', 'SLAT_B', 'sim'])
 
     for x in Sources.keys():
@@ -178,8 +179,11 @@ if esercizio == 1:
     # Considerando:
     GMT = CalcoloGlobalMatchingTable(SOURCES, GlobalSchema, 0.1, 'max', 0.1, 'NO')
     # TODO DOMANDA 1: Come posso ottenere un mapping 1-N, in cui un attributo locale sia mappato in un solo (il migliore) attributo globale?
+    # RISPOSTA 1 - Alessandro
+    # E' sufficiente impiegare come tecnica di mapping globale lo stable marriage al contrario del symmetric best match
     # TODO DOMANDA 2: Come posso ottenere un mapping N-N, in cui un attributo locale sia mappato in massimo due (i migliori) attributo globale?
-
+    # RISPOSTA 2 - Alessandro
+    # Posso impiegare la top-k strategy con k = 2.
 
 # ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -224,7 +228,10 @@ elif esercizio == 2:
     SchemaIntegration(SOURCES, 0.1, 'max', 0.1, 'NO')
 
     # TODO DOMANDA 1: Cosa cambia se vario la soglia value_overlap_simjoin_jaccardT portandola a 0.9
+    # RISPOSTA 1 - Alessandro
+    # A livello teorico quello che accade è che il numero di match dovrebbe risursi in quanto sale la soglia del coefficiente di similarità
     # TODO DOMANDA 2: Perché è rimasto tutto invariato?
+    # Usando come combiner il max con soglia a 0.1 i risultati migliori saranno sempre gli stessi che avevamo prima
     # TODO DOMANDA 3: Perché viene usata per decidere se un valore è uguale ad un altro, e nel nostro caso sono tutti singolo caratteri
 
 
@@ -274,6 +281,8 @@ elif esercizio == 3:
     #  Modificare il processo di schema matching (sia parametri che struttura di CalcoloGlobalMatchingTable) per migliorare:
     #  - Precision
     #  - Recall
+    # IN QUESTO CASO E' SUFFICIENTE PROCEDERE PER TENTTIVI ANDANDO AD AGGIUNGERE DELLE MISURE OPPURE
+    # VARIARE IL TIPO DI MISURAZIONE DA CONSIDERARE NEL COMBINER - > MIN/MAX/AVG
 
     # TODO DOMANDA 2:
     #  Considerare la seguente Mapping Matching Table data MTdata_TopDown2.
@@ -286,6 +295,7 @@ elif esercizio == 3:
     #  per ottenere una Global Mapping Matrix con le stesse caratteristiche;
     #  ad esempio se il mapping stabilito da MTdata_TopDown2 è *1-N si dovrebbe ottenere lo stesso tipo di mapping.
     #  Non è necessario effettuare la valutazione di precision e recall.
+    # ABBIAMO UNA N-N, PER MODIFICARE LA FUNZIONE PRECEDENTE BASTA USARE UNA TOP-K COME METODO DI MAPPING PER GENERARE LE CORRISPONDENZE
 
     MTdata_TopDown234 = pd.read_csv(path + 'MTdata_TopDown234.csv').astype(str)
     # print(to_GMM(MTdata_TopDown234)) -> CORREGGERE PERCHÉ DA ERRORE
