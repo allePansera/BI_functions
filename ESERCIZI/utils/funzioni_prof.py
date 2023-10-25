@@ -221,12 +221,12 @@ def top_1(SimTable: pd.DataFrame, AoB: str = "A"):
 #############################################################
 
 
-def stable_marriage(MatchTable: pd.DataFrame):
-    MATCH = pd.DataFrame(columns=["A", "B", "sim"])
+def stable_marriage(MatchTable: pd.DataFrame, A='A', B='B'):
+    MATCH = pd.DataFrame(columns=[A, B, "sim"])
     MT = deepcopy(MatchTable)
     MT = MT.sort_values(["sim"], ascending=[False])
     while True:
-        R = MT.loc[(~MT["A"].isin(MATCH["A"])) & (~MT["B"].isin(MATCH["B"]))]
+        R = MT.loc[(~MT[A].isin(MATCH[A])) & (~MT[B].isin(MATCH[B]))]
         if len(R) == 0:
             break
         x = R.iloc[0, :]
@@ -234,15 +234,15 @@ def stable_marriage(MatchTable: pd.DataFrame):
     return MATCH
 
 
-def simmetric_best_match(MatchTable: pd.DataFrame):
+def simmetric_best_match(MatchTable: pd.DataFrame, A='A', B='B'):
     CMT = deepcopy(MatchTable)
 
     CMT['A_RowNo'] = CMT.sort_values(['sim'], ascending=[False]) \
-                         .groupby(['A']) \
+                         .groupby([A]) \
                          .cumcount() + 1
 
     CMT['B_RowNo'] = CMT.sort_values(['sim'], ascending=[False]) \
-                         .groupby(['B']) \
+                         .groupby([B]) \
                          .cumcount() + 1
 
     return CMT[(CMT.A_RowNo == 1) & (CMT.B_RowNo == 1)].drop(columns=['A_RowNo', 'B_RowNo']).sort_values(['sim'], ascending=[False])
@@ -565,6 +565,56 @@ def CalcoloDeiCluster(MatchTableCRT):
     return CLUSTERS.sort_values('ClusterKey')
 
 
+def VisualizzaCluster(Clusters):
+    vClusters = deepcopy(Clusters)
+    vClusters.columns = ['ClusterKey', 'ClusterElement']
+    vClusters['source'] = vClusters['ClusterElement'].astype(str).str[1]
+
+    def Aggregazione(x):
+        Campi = {
+            '#Sorgenti': x['source'].nunique(),
+            'Sorgenti': x['source'].str.cat(sep=','),
+            '#Record': x['ClusterElement'].nunique(),
+            'Record': x['ClusterElement'].str.cat(sep=',')
+        }
+        return pd.Series(Campi)
+
+    groupedCLUSTERS = vClusters.groupby('ClusterKey').apply(Aggregazione).reset_index()
+
+    return groupedCLUSTERS
+
+
+def Aggregazione(x):
+    x['source'] = x['ClusterElement'].astype(str).str[:1]
+    x['ClusterElement'] = x['ClusterElement'].astype(str)
+
+    Campi = {
+        '#Sources': x['source'].nunique(),
+        'Sources': x['source'].drop_duplicates().str.cat(sep=','),
+        '#Elements': x['ClusterElement'].nunique(),
+        'Elements': x['ClusterElement'].str.cat(sep=',')
+    }
+    return pd.Series(Campi)
+
+
+def _VisualizzaDistribuzioneCluster(Clusters):
+    gruppi = Clusters.groupby('ClusterKey')
+    conteggio_gruppi = gruppi.size().reset_index(name='NumeroElementiPerCluster')
+    Risultato = conteggio_gruppi.groupby('NumeroElementiPerCluster').size().reset_index(name='NumeroCluster')
+    print("Numero Elementi", (Risultato['NumeroElementiPerCluster'] * Risultato['NumeroCluster']).sum())
+    ClusterMax = conteggio_gruppi[conteggio_gruppi['NumeroElementiPerCluster'] == Risultato['NumeroElementiPerCluster'].max()]
+    print("Cluster con max numero di elementi:", ClusterMax['ClusterKey'].tolist())
+
+    return Risultato
+
+
+def IdSOURCES(Sources: dict):
+    ListaID = []
+    for s in Sources.keys():
+        ListaID += Sources[s]['id'].to_list()
+    return ListaID
+
+
 #############################################################
 ################# VALUTAZIONE DEL CLUSTERING ################
 #############################################################
@@ -574,5 +624,14 @@ def MatchIndottiGMT(GMT):
     Join = Join[Join.SLAT_x <= Join.SLAT_y]
     Join = Join[['SLAT_x', 'SLAT_y']]
     Join.columns = ['A', 'B']
+
+    return Join.drop_duplicates()
+
+
+def CalcolaMatchIndottiCluster(Cluster):
+    Join = pd.merge(Cluster, Cluster, on='ClusterKey')
+    Join = Join[Join.ClusterElement_x < Join.ClusterElement_y]
+    Join = Join[['ClusterElement_x', 'ClusterElement_y']]
+    Join.columns = ['l_id', 'r_id']
 
     return Join.drop_duplicates()
