@@ -500,12 +500,69 @@ def ClusterComponentiConnessi(MatchTable, TuttiInodi):
     return cluster_df
 
 
-def fromClusterToGMT(Cluster, LAT):
+def fromClusterToGMT_given_LAT(Cluster, LAT):
     GMT = pd.merge(Cluster, LAT, \
                    left_on='ClusterElement', right_on='SLAT'). \
         rename(columns={'ClusterKey': 'GAT'}). \
         drop(columns='ClusterElement')
     return GMT.sort_values(['GAT', 'SOURCE'])
+
+
+def fromClusterToGMT(ClusterInput):
+    X = ClusterInput.rename(columns={'ClusterKey': 'GAT', 'ClusterElement': 'SLAT'})
+
+    def Estrai(x):
+        x = x.split("_")
+        return x[0]
+
+    def Estrai2(x):
+        x = x.split("_")
+        return x[1]
+
+    X['SOURCE'] = X['SLAT'].map(Estrai)
+    X['LAT'] = X['SLAT'].map(Estrai2)
+
+    return X
+
+
+# per estrarre le corrispondenze e rinominarle come (A,B)
+def toA_B(Y):
+    X = Y[['GAT', 'SLAT']].rename(columns={'GAT': 'A', 'SLAT': 'B'})
+    return X
+
+
+# oppure correggere ChiusuraRiflessivaTransitiva
+def ChiusuraRiflessivaTransitiva(MatchTable, LAT):
+    def transitive_closure(a):
+        closure = set(a)
+        while True:
+            new_relations = set((x, w) for x, y in closure for q, w in closure if q == y)
+            closure_until_now = closure | new_relations
+            if closure_until_now == closure:
+                break
+            closure = closure_until_now
+        return closure
+
+    X = transitive_closure([(x[1], x[0]) for x in MatchTable.values.tolist()]
+                           +
+                           [(x[0], x[1]) for x in MatchTable.values.tolist()])
+    TRANSITIVE_CLOSURE = pd.DataFrame(data=list(X), columns=['A', 'B'])
+
+    DA = LAT[['SLAT']].drop_duplicates()
+    REFLEXIVE_CLOSURE = pd.DataFrame({'A': LAT['SLAT'].drop_duplicates().to_list(),
+                                      'B': LAT['SLAT'].drop_duplicates().to_list()})
+
+    REFLEXIVE_SYMMETRIC_TRANSITIVE_CLOSURE = TRANSITIVE_CLOSURE.append(REFLEXIVE_CLOSURE, ignore_index=True)
+
+    return REFLEXIVE_SYMMETRIC_TRANSITIVE_CLOSURE
+
+
+def CalcoloDeiCluster(MatchTableCRT):
+    CLUSTERS = MatchTableCRT.groupby('A').agg({'B': np.max}).reset_index()
+    CLUSTERS.columns = ['ClusterElement', 'ClusterKey']
+    CLUSTERS = CLUSTERS[['ClusterKey', 'ClusterElement']]
+
+    return CLUSTERS.sort_values('ClusterKey')
 
 
 #############################################################
