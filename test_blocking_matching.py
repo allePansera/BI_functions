@@ -1,4 +1,5 @@
 from Blocking.EntityMatching import EntityMatching
+from Evaluation.Evaluation import vedi_valuta, valuta
 import pandas as pd
 
 
@@ -38,9 +39,18 @@ omit_l_attrs = ["l_id"]
 # r attrs to exclude
 omit_r_attrs = ["l_id"]
 # matching method
-matching_method = "SYMM" # STAB
+matching_method = "STAB" # STAB # SYMM
 
 em = EntityMatching(SOURCES)
 entity_match_table = em.process(method, blocking_keys, omit_l_attrs, omit_r_attrs,
                                 blocking_rules, matching_rules, matching_method)
+
+cluster_entity_matching=EntityMatching.cluster_componenti_connessi(entity_match_table[['l_id','r_id']],
+                                                                   EntityMatching.id_sources(SOURCES))
+cluster_gold_standard=EntityMatching.cluster_componenti_connessi(GoldStandard[['l_id','r_id']],
+                                                                 EntityMatching.id_sources(SOURCES))
+
+Valuta = valuta(EntityMatching.calcola_match_indotti_cluster(cluster_gold_standard).rename(columns={"l_id": "A", "r_id": "B"}),
+                     EntityMatching.calcola_match_indotti_cluster(cluster_entity_matching).rename(columns={"l_id": "A", "r_id": "B"}))
+print(Valuta)
 print(entity_match_table)

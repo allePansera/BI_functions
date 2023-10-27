@@ -7,6 +7,7 @@ def toA_B(Y):
 
 
 def valuta(gold_schema: pd.DataFrame, global_match: pd.DataFrame):
+
     Match = global_match[['A', 'B']]
     FOJ = gold_schema.merge(Match, how='outer', indicator=True)
 

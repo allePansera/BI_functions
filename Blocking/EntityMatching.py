@@ -1,4 +1,5 @@
 from .BlockingMatching import BlockingMatching
+from Evaluation.Evaluation import valuta_blocking
 from CorrispBuilder.CorrisBuilder import CorrisBuilder
 from copy import deepcopy
 import pandas as pd
@@ -48,9 +49,11 @@ class EntityMatching:
                     elif matching_method == "STAB":
                         MTxy = cb.stable_marriage_method().rename(columns={"A": "l_id", "B": "r_id"})
                     else:
-                        raise Exception(f"Matching method '{matching_method}' not supported")
+                        # raise Exception(f"Matching method '{matching_method}' not supported")
+                        MTxy =  match_table_formatted.rename(columns={"A": "l_id", "B": "r_id"})
 
                     MatchTable = MatchTable.append(MTxy[['l_id', 'r_id', 'Sim. Score']], sort=True)
+
         return MatchTable
 
 
@@ -87,3 +90,12 @@ class EntityMatching:
 
         cluster_df = pd.DataFrame(cluster_data)
         return cluster_df
+
+    @staticmethod
+    def calcola_match_indotti_cluster(Cluster):
+          Join=pd.merge(Cluster,Cluster, on='ClusterKey')
+          Join=Join[Join.ClusterElement_x<Join.ClusterElement_y]
+          Join=Join[['ClusterElement_x','ClusterElement_y']]
+          Join.columns=['l_id','r_id']
+
+          return Join.drop_duplicates()
