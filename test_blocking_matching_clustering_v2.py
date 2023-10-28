@@ -28,13 +28,14 @@ for s in SOURCES:
 
 
 # blocking rules - blocco su zip_code
-# method = "join_blocker"
-method = "rule_based_diff_type"
-blocking_keys = ["fullname"]
-blocking_rules = [[{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) < {}", "attr": "fullname", "score": "0.3"}]]
+method = "join_blocker"
+# method = "rule_based_diff_type"
+blocking_keys = ["fullnamezip"]
+blocking_rules = []
+# blocking_rules = [[{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) < {}", "attr": "fullnamezip", "score": "0.3"}]]
 # matching rules
 matching_rules = [
-        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "fullname", "score": "0.3"}]
+        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "fullnamezip", "score": "0.3"}]
 ]
 # l attrs to exclude
 omit_l_attrs = ["l_id"]
