@@ -1,4 +1,4 @@
-from Integration.BottomUp import schema_integration, match_indotti_GMT
+from Integration.BottomUp import schema_integration, match_indotti_GMT, to_GMM
 from Evaluation.Evaluation import valuta, toA_B
 from SchemaMatching import SchemaMatching
 import pandas as pd, random
@@ -53,11 +53,12 @@ gold_standard = pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/
 for sim_methods in sim_combinations:
     global_match_table = schema_integration(SOURCES, sim_methods, corr_method, score)
     final_result = valuta(match_indotti_GMT(gold_standard), match_indotti_GMT(global_match_table))
-    res.append([final_result, sim_methods])
+    res.append([final_result, sim_methods, global_match_table])
 
 res = sorted(res, key=lambda x: sum(x[0]["F"]), reverse=True)
 for i in range(3):
     print("="*50)
     print(res[i][1])
     print(res[i][0])
+    print(to_GMM(res[i][2]))
 
