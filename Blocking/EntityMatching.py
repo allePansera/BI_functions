@@ -99,3 +99,17 @@ class EntityMatching:
           Join.columns=['l_id','r_id']
 
           return Join.drop_duplicates()
+
+    @staticmethod
+    def aggregazione_cluster(x):
+        x['source'] = x['ClusterElement'].astype(str).str[:1]
+        x['ClusterElement'] = x['ClusterElement'].astype(str)
+
+        Campi = {
+            '#Sources': x['source'].nunique(),
+            'Sources': x['source'].drop_duplicates().str.cat(sep=','),
+            '#Elements': x['ClusterElement'].nunique(),
+            'Elements': x['ClusterElement'].str.cat(sep=',')
+        }
+        return pd.Series(Campi)
+

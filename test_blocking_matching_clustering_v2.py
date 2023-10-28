@@ -53,11 +53,18 @@ cluster_entity_matching=EntityMatching.cluster_componenti_connessi(entity_match_
 cluster_gold_standard=EntityMatching.cluster_componenti_connessi(GoldStandard[['l_id','r_id']],
                                                                  EntityMatching.id_sources(SOURCES))
 
+# da controllare per verificare Precision e Recall
 Valuta = valuta(EntityMatching.calcola_match_indotti_cluster(cluster_gold_standard).rename(columns={"l_id": "A", "r_id": "B"}),
                      EntityMatching.calcola_match_indotti_cluster(cluster_entity_matching).rename(columns={"l_id": "A", "r_id": "B"}))
+
+# da controllare quando si hanno score troppo bassi nel matching
 VediValuta = vedi_valuta(EntityMatching.calcola_match_indotti_cluster(cluster_gold_standard).rename(columns={"l_id": "A", "r_id": "B"}),
                      EntityMatching.calcola_match_indotti_cluster(cluster_entity_matching).rename(columns={"l_id": "A", "r_id": "B"}),
                     "FP")
+# da controllare per verificare il numero di elementi per ogni cluster, può essere comodo per valutare il mapping
+ClusterGrouping = cluster_entity_matching.groupby('ClusterKey').apply(EntityMatching.aggregazione_cluster).reset_index().sort_values('#Elements',
+                                                                                                 ascending=False)
 print(Valuta)
 print(VediValuta)
+print(ClusterGrouping)
 # print(entity_match_table)
