@@ -68,7 +68,13 @@ class BlockingMatching:
                                        )
 
         elif method == "join_blocker":
-            return join_blocker(self.dataset_a, self.dataset_b, blocking_keys)
+            l_attrs_list = self.dataset_a.columns if hasattr(self.dataset_a, "columns") else self.dataset_a.index
+            r_attrs_list = self.dataset_b.columns if hasattr(self.dataset_b, "columns") else self.dataset_b.index
+            return join_blocker(self.dataset_a, self.dataset_b,
+                                       blocking_keys[0] if isinstance(blocking_keys, list) else blocking_keys,
+                                       l_attrs=[i for i in l_attrs_list if i not in omit_l_attrs],
+                                       r_attrs=[i for i in r_attrs_list if i not in omit_r_attrs]
+                                       )
 
         elif method == "record_linkage":
             return record_linkage_blocking(self.dataset_a, self.dataset_b, blocking_keys)

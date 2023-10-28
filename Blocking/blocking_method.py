@@ -1,4 +1,6 @@
 import py_entitymatching as em
+import py_stringmatching as sm
+import py_stringsimjoin as ssj
 import recordlinkage as rl
 import pandas as pd
 from SimilarityMeasure.SimilarityMeasure import levenshtein_similarity_function
@@ -37,15 +39,27 @@ def equivalence_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs,
     return C
 
 
-def join_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_keys: list):
+def join_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs, r_attrs, q_gram=3, sim_thresh=0.3):
     """
     equivalence blocker but with multiple blocking key
-    :param A: first dataset
-    :param B: second dataset
-    :param blocking_keys:
+    :param A: first Dataset
+    :param B: second Dataset
+    :param blocking_key: attr. to use for blocking on both table
+    :param l_attrs: attrs to compare from left dataset
+    :param r_attrs: attrs to compare from right dataset
     :return:
     """
-    return A.merge(B, on=blocking_keys, how='inner')
+    # mt = A.merge(B, on=blocking_keys, how='inner')
+    C_SimJoin_mix = ssj.jaccard_join(A, B, 'l_id', 'r_id',
+                                     blocking_key, blocking_key, sm.QgramTokenizer(qval=q_gram), threshold=sim_thresh,
+                                     l_out_attrs=l_attrs,
+                                     r_out_attrs=r_attrs)
+
+    C_SimJoin_mix = C_SimJoin_mix.rename(columns={'l_l_id': 'l_id'})
+    C_SimJoin_mix = C_SimJoin_mix.rename(columns={'r_r_id': 'r_id'})
+    C_SimJoin_mix = C_SimJoin_mix.rename(columns={'_sim_score': 'Sim. Score'})
+
+    return C_SimJoin_mix
 
 
 def record_linkage_blocking(A: pd.DataFrame, B: pd.DataFrame, blocking_keys: list):
