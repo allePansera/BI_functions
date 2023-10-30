@@ -635,3 +635,26 @@ def CalcolaMatchIndottiCluster(Cluster):
     Join.columns = ['l_id', 'r_id']
 
     return Join.drop_duplicates()
+
+
+def find_missed_matches(gold_standard: pd.DataFrame, C: pd.DataFrame, A: pd.DataFrame, B: pd.DataFrame, on=None, left_on=None,
+                        right_on=None, metric: str = 'FN') -> pd.DataFrame:
+    """
+    Finds missed matches from given gold standard.
+
+    Returns
+    -------
+    missed_match_table: pd.DataFrame
+        Table containing missed matches information.
+    """
+    if metric == 'FP':
+        merge = 'right_only'
+        rows = right_on if right_on is not None else on
+    elif metric == 'FN':
+        merge = 'left_only'
+        rows = left_on if left_on is not None else on
+
+    missed_match_table = \
+        pd.merge(gold_standard, C, how='outer', indicator=True, on=on, left_on=left_on, right_on=right_on).query(f"_merge=='{merge}'")[rows]
+
+    return pd.merge(pd.merge(missed_match_table, A, left_on=rows[0], right_on='l_id'), B, left_on=rows[1], right_on='r_id')
