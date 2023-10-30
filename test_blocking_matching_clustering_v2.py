@@ -1,5 +1,6 @@
 from Blocking.EntityMatching import EntityMatching
 from Evaluation.Evaluation import vedi_valuta, valuta
+from ESERCIZI.utils.funzioni_prof import _VisualizzaDistribuzioneCluster, VisualizzaCluster
 import pandas as pd
 
 
@@ -69,9 +70,15 @@ VediValuta = vedi_valuta(EntityMatching.calcola_match_indotti_cluster(cluster_go
 ClusterGrouping = cluster_entity_matching.groupby('ClusterKey').apply(EntityMatching.aggregazione_cluster).reset_index().sort_values('#Elements',
                                                                                                  ascending=False)
 
+# visualizzare distribuzione del cluster
+_VisualizzaDistribuzioneCluster(cluster_entity_matching)
 
-print(Valuta)
-print(VediValuta)
-print(ClusterGrouping)
-print(CorrespMT)
+# visualizzazione dei cluster
+grouped_cluster = VisualizzaCluster(cluster_entity_matching)
+
+print("Valuta: ",Valuta)
+print("Visualizzazione dei FP: ", VediValuta)
+print("Visualizzazione dei cluster: ", cluster_entity_matching)
+print("Visualizzazione raggrupp. cluster: ", ClusterGrouping)
+print("Visualizzazione matrice corrispondenze: ", CorrespMT)
 # print(entity_match_table)

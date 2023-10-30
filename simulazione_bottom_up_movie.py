@@ -1,5 +1,7 @@
 from Integration.BottomUp import schema_integration, match_indotti_GMT, to_GMM, genera_LAT, confronta_source_GoldStandard
 from Evaluation.Evaluation import valuta, toA_B
+from ESERCIZI.utils.funzioni_prof import _VisualizzaDistribuzioneCluster, CalcoloDeiCluster
+from Blocking.EntityMatching import EntityMatching
 from SchemaMatching import SchemaMatching
 import pandas as pd, random
 
@@ -51,10 +53,13 @@ gold_standard = pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/
 # stampa per verificare il tipo di mapping tra le sorgenti e il gold standard
 LAT=genera_LAT(SOURCES)
 confronta_source_GoldStandard(gold_standard, LAT)
-gmm_gs = to_GMM(gold_standard)
-print(gmm_gs)
 # se il gold standard ha una corrispondenza 1-1 anche devo applicare una 1-1
 # devi studiare la differenza tra stable marriage e symm best matches
+gmm_gs = to_GMM(gold_standard)
+print(gmm_gs)
+
+_VisualizzaDistribuzioneCluster(CalcoloDeiCluster(toA_B(gold_standard)))
+
 
 for sim_methods in sim_combinations:
     global_match_table = schema_integration(SOURCES, sim_methods, corr_method, score)
