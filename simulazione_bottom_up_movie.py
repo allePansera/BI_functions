@@ -53,6 +53,8 @@ LAT=genera_LAT(SOURCES)
 confronta_source_GoldStandard(gold_standard, LAT)
 gmm_gs = to_GMM(gold_standard)
 print(gmm_gs)
+# se il gold standard ha una corrispondenza 1-1 anche devo applicare una 1-1
+# devi studiare la differenza tra stable marriage e symm best matches
 
 for sim_methods in sim_combinations:
     global_match_table = schema_integration(SOURCES, sim_methods, corr_method, score)
