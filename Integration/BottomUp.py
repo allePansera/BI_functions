@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from SchemaMatching import SchemaMatching
 from CorrispBuilder.CorrisBuilder import CorrisBuilder
@@ -115,10 +116,40 @@ def from_cluster_to_GMT(cluster, LAT):
 
 
 def to_GMM(GMTA: pd.DataFrame):
-    df = GMTA.groupby(['GAT','SOURCE'])['LAT'].agg(list).unstack('SOURCE')
+    df = GMTA.groupby(['GAT', 'SOURCE'])['LAT'].agg(list).unstack('SOURCE')
+
     for c in df.columns:
-        df.loc[df[c].isnull(), [c]] = df.loc[df[c].isnull(), c].apply(lambda x: [])
+        df[c] = df[c].apply(lambda x: [] if isinstance(x, float) and np.isnan(x) else x)
+
     return df
+
+def genera_LAT(Sources):
+  LAT = pd.DataFrame(columns=['SOURCE', 'LAT', 'SLAT'])
+  for x in Sources:
+    for y in Sources[x].columns:
+      LAT.loc[len(LAT)]=[str(x),str(y), str(x)+'_'+str(y)]
+  return LAT
+
+
+def IsFD(R, A, Det, Numero):
+    if Numero:
+        return R.groupby(A)[Det].nunique().reset_index(name='counts').query("counts>1").shape[0]
+    else:
+        return R.groupby(A)[Det].nunique().reset_index(name='counts').query("counts>1")
+
+
+def confronta_source_GoldStandard(_GoldStandard, _LAT):
+
+    FOJ= pd.merge(_GoldStandard,_LAT, how='outer', indicator=True).sort_values(['GAT','SOURCE'])
+
+    print("I seguenti LAT non sono mappati in GAT")
+    print(FOJ.query(" _merge == 'right_only' ")['SLAT'].tolist())
+
+    print("I seguenti GAT in SOURCE sono mappati in più LAT")
+    print(IsFD(_GoldStandard,['GAT','SOURCE'],'LAT',0))
+
+    print("I seguenti LAT in SOURCE sono mappati in più GAT")
+    print(IsFD(_GoldStandard,['LAT','SOURCE'],'GAT',0))
 
 
 def schema_integration(sources, sim_methods, corr_method, score="SimAvg"):

@@ -1,4 +1,4 @@
-from Integration.BottomUp import schema_integration, match_indotti_GMT, to_GMM
+from Integration.BottomUp import schema_integration, match_indotti_GMT, to_GMM, genera_LAT, confronta_source_GoldStandard
 from Evaluation.Evaluation import valuta, toA_B
 from SchemaMatching import SchemaMatching
 import pandas as pd, random
@@ -13,10 +13,7 @@ SOURCES['S2'] = pd.read_csv("http://dbgroup.ing.unimore.it/SIWS/DataIntegration/
 SOURCES['S3'] = pd.read_csv("http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS3_B.csv").astype(str)
 SOURCES['S4'] = pd.read_csv("http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS4_B.csv").astype(str)
 
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS1_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS2_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS3_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS4_B.csv',
+
 
 LAT = pd.DataFrame(columns=['SOURCE', 'LAT', 'SLAT'])
 for x in SOURCES.keys():
@@ -50,6 +47,13 @@ for i in range(x):
 res = []
 gold_standard = pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/GoldStandardFull.csv').astype(str)
 
+
+# stampa per verificare il tipo di mapping tra le sorgenti e il gold standard
+LAT=genera_LAT(SOURCES)
+confronta_source_GoldStandard(gold_standard, LAT)
+gmm_gs = to_GMM(gold_standard)
+print(gmm_gs)
+
 for sim_methods in sim_combinations:
     global_match_table = schema_integration(SOURCES, sim_methods, corr_method, score)
     final_result = valuta(match_indotti_GMT(gold_standard), match_indotti_GMT(global_match_table))
@@ -60,5 +64,6 @@ for i in range(3):
     print("="*50)
     print(res[i][1])
     print(res[i][0])
-    print(to_GMM(res[i][2]))
+    gmm = to_GMM(res[i][2])
+    print(gmm)
 
