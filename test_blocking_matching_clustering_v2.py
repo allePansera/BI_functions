@@ -68,6 +68,8 @@ VediValuta = vedi_valuta(EntityMatching.calcola_match_indotti_cluster(cluster_go
 # da controllare per verificare il numero di elementi per ogni cluster, può essere comodo per valutare il mapping
 ClusterGrouping = cluster_entity_matching.groupby('ClusterKey').apply(EntityMatching.aggregazione_cluster).reset_index().sort_values('#Elements',
                                                                                                  ascending=False)
+
+
 print(Valuta)
 print(VediValuta)
 print(ClusterGrouping)
