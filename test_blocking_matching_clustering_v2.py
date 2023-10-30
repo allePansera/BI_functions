@@ -48,6 +48,10 @@ em = EntityMatching(SOURCES)
 entity_match_table = em.process(method, blocking_keys, omit_l_attrs, omit_r_attrs,
                                 blocking_rules, matching_rules, matching_method)
 
+# query per verifica del matching all'interno della match table
+CorrespMT = entity_match_table.groupby('r_id')[['l_id']].count().sort_values('l_id', ascending=False)
+
+
 cluster_entity_matching=EntityMatching.cluster_componenti_connessi(entity_match_table[['l_id','r_id']],
                                                                    EntityMatching.id_sources(SOURCES))
 cluster_gold_standard=EntityMatching.cluster_componenti_connessi(GoldStandard[['l_id','r_id']],
@@ -67,4 +71,5 @@ ClusterGrouping = cluster_entity_matching.groupby('ClusterKey').apply(EntityMatc
 print(Valuta)
 print(VediValuta)
 print(ClusterGrouping)
+print(CorrespMT)
 # print(entity_match_table)
