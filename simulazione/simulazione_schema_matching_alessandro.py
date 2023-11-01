@@ -32,8 +32,6 @@ gmm_v2 = to_GMM(GoldStandard_v2)
 LAT=genera_LAT(SOURCES)
 print("="*45)
 print("GS V1")
-confronta_source_GoldStandard(GoldStandard_v1, LAT)
-print("GS V2")
 print("="*45)
 # Tutto confermato, inoltre per problemi di visibilità delle colonne
 # mi era sfuggito anche autofocus su S1 con cardinalità N-1.
