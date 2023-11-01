@@ -86,6 +86,6 @@ all'interno del criterio di similarità.
 Se invece vado a controllare i problemi legati ai falsi negativi (1) è legato per forza ad un errore nel GS
 perchè i cognomi sono differenti.
 
-Con la solzuione del date of birth ho risolto i problemi siccome adesso ho solo il FP sbagliato del GS
+Con la soluzione del date of birth ho risolto i problemi siccome adesso ho solo il FP sbagliato del GS
 """
 exit(1)
