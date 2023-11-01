@@ -24,8 +24,13 @@ def local_match_table_thread(sources, x, y, sim_methods, corr_method, score):
         LocalMatchingTableXY = cb.symmetric_best_match_method()
     elif corr_method == "TOP_1":
         LocalMatchingTableXY = cb.top_k_method()
+    elif "TOP_K" in corr_method:
+        # Expecting values like TOP_K_2 in order to extract 2 as an integer
+        k = int(corr_method.split("_")[-1])
+        cb.top_k = k
+        LocalMatchingTableXY = cb.top_k_method()
     else:
-        raise Exception(f"Corresp. method '{corr_method}' not supported")
+         raise Exception(f"Corresp. method '{corr_method}' not supported")
 
     LocalMatchingTableXY = LocalMatchingTableXY[["A", "B", "Sim. Score"]]
     LocalMatchingTableXY.columns = ['LAT_A', 'LAT_B', 'Sim. Score']
