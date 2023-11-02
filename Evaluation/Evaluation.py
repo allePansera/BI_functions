@@ -41,7 +41,7 @@ def valuta(gold_schema: pd.DataFrame, global_match: pd.DataFrame):
 
 
 def vedi_valuta(Gold: pd.DataFrame, Match: pd.DataFrame, metrics: str):
-    Match = Match[['A', 'B']]
+    #Match = Match[['A', 'B']]
     FOJ = pd.merge(Gold, Match, how='outer', indicator=True)
 
     TP = FOJ[FOJ['_merge'] == 'both']
