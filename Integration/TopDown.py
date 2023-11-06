@@ -20,6 +20,11 @@ def match_table_thread(global_schema, local_schemas, y_index,  sim_methods, corr
         match_table = cb.symmetric_best_match_method()
     elif corr_method == "TOP_1":
         match_table = cb.top_k_method()
+    elif "TOP_K" in corr_method:
+        # Expecting values like TOP_K_2 in order to extract 2 as an integer
+        k = int(corr_method.split("_")[-1])
+        cb.top_k = k
+        match_table = cb.top_k_method()
     else:
         raise Exception(f"Corresp. method '{corr_method}' not supported")
     match_table = match_table[["A", "B", "Sim. Score"]]
