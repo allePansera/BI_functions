@@ -26,11 +26,17 @@ def match_table_thread(global_schema, local_schemas, y_index,  sim_methods, corr
         cb.top_k = k
         match_table = cb.top_k_method()
     else:
-        raise Exception(f"Corresp. method '{corr_method}' not supported")
+        match_table = sim_table
+    # elif "TRESH" in corr_method:
+        # raise Exception(f"Corresp. method '{corr_method}' not supported")
+        # per prove temporanee
+    #    cb.threshold = 0.4
+    #    match_table = cb.thresholding()
+
     match_table = match_table[["A", "B", "Sim. Score"]]
     # a -> attr. of global schema
     # b -> attr. of local schema
-    match_table = CorrisBuilder.thresholding(match_table, 0.6)
+    match_table = CorrisBuilder.thresholding(match_table, 0.3)
 
     match_table.columns = ['GAT', 'LAT', 'Sim. Score']
     match_table['SOURCE'] = str(y_index)
@@ -44,7 +50,7 @@ def global_match_table(local_schemas: list, global_schema: pd.DataFrame, sim_met
     :param local_schemas: list of local schema to integrate
     :param global_schema: global schema to compare
     :param sim_methods: methods to build ensemble similarity method
-    :param corr_method: methods to use for correspondences building ["STAB_MARR", "SYMM_MATCH", "TOP_1"]
+    :param corr_method: methods to use for correspondences building ["STAB_MARR", "SYMM_MATCH", "TOP_1", "TRESH"]
     :param score: SimMin/SimMax/SimAvg
     :param weights: weighted sum of score
     :return: match table global with each source

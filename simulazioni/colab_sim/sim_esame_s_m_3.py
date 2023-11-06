@@ -1,6 +1,6 @@
 from Integration.TopDown import global_match_table
 from Integration.BottomUp import to_GMM
-from Evaluation.Evaluation import valuta, toA_B
+from Evaluation.Evaluation import valuta, toA_B, vedi_valuta
 from SchemaMatching import SchemaMatching
 import pandas as pd, random
 
@@ -24,9 +24,9 @@ for x in SOURCES.keys():
 
 sim_combinations = []
 weights = [0.7, 0.15, 0.15]
-corr_method = "TOP_K_2"
+corr_method = "TRESH"
 # score = "SimWeight"
-score = 'SimMax'
+score = 'SimAvg'
 x = 10
 y = 3
 # create x possible combination of y different sim. measure
@@ -49,17 +49,21 @@ for i in range(x):
 
 
 res = []
+
+
 for sim_methods in sim_combinations:
     global_match = global_match_table(SOURCES, global_schema, sim_methods, corr_method, score, weights)
     final_result = valuta(toA_B(gold_standard), toA_B(global_match))
-    res.append([final_result, sim_methods])
+    res.append([final_result, sim_methods, global_match])
 
 res = sorted(res, key=lambda x: sum(x[0]["F"]), reverse=True)
 for i in range(3):
-    print("="*50)
-    print(res[i][1])
-    print(res[i][0])
-
+    if i < len(res):
+        print("="*50)
+        print(res[i][1])
+        print(res[i][0])
+        vv = vedi_valuta(gold_standard[['GAT', 'SLAT']], res[i][2][['GAT', 'SLAT']], 'FP')
+        print(vv)
 
 exit(1)
 
