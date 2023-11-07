@@ -39,7 +39,7 @@ def equivalence_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs,
     return C
 
 
-def join_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs, r_attrs, q_gram=3, sim_thresh=0.2):
+def join_blocker(A: pd.DataFrame, B: pd.DataFrame, blocking_key, l_attrs, r_attrs, q_gram=3, sim_thresh=0.3):
     """
     equivalence blocker but with multiple blocking key
     :param A: first Dataset

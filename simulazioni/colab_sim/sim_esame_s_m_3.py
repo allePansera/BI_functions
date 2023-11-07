@@ -23,7 +23,8 @@ for x in SOURCES.keys():
       LAT.loc[len(LAT)]=[str(x),str(y), str(x)+'_'+str(y)]
 
 sim_combinations = []
-weights = [0.7, 0.15, 0.15]
+# weights = [0.7, 0.15, 0.15]
+weights = []
 corr_method = "TRESH"
 # score = "SimWeight"
 score = 'SimAvg'
@@ -49,7 +50,7 @@ for i in range(x):
 
 
 res = []
-
+sim_combinations = [[{"label": "LEV"}, {"value_overlap": "SJ"}, {"value_overlap": "JAC"}]]
 
 for sim_methods in sim_combinations:
     global_match = global_match_table(SOURCES, global_schema, sim_methods, corr_method, score, weights)
@@ -62,8 +63,10 @@ for i in range(3):
         print("="*50)
         print(res[i][1])
         print(res[i][0])
-        vv = vedi_valuta(gold_standard[['GAT', 'SLAT']], res[i][2][['GAT', 'SLAT']], 'FP')
-        print(vv)
+        vv_FP = vedi_valuta(gold_standard[['GAT', 'SLAT']], res[i][2][['GAT', 'SLAT']], 'FP')
+        vv_FN = vedi_valuta(gold_standard[['GAT', 'SLAT']], res[i][2][['GAT', 'SLAT']], 'FN')
+        print(vv_FP)
+        print(vv_FN)
 
 exit(1)
 

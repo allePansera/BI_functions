@@ -48,6 +48,13 @@ class EntityMatching:
                         MTxy = cb.symmetric_best_match_method().rename(columns={"A": "l_id", "B": "r_id"})
                     elif matching_method == "STAB":
                         MTxy = cb.stable_marriage_method().rename(columns={"A": "l_id", "B": "r_id"})
+                    elif "TOP_K" in matching_method:
+                        k = int(matching_method.split("_")[-1])
+                        cb.top_k = k
+                        cb.threshold = 0.8
+                        MTxy = cb.top_k_method().rename(columns={"A": "l_id", "B": "r_id"})
+                        MTxy = CorrisBuilder.thresholding(MTxy, 0.7)
+
                     else:
                         # raise Exception(f"Matching method '{matching_method}' not supported")
                         MTxy =  match_table_formatted.rename(columns={"A": "l_id", "B": "r_id"})

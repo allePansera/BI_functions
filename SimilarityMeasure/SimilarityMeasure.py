@@ -6,7 +6,7 @@ from SimilarityMeasure.PreProcessing import string_pre_process
 import warnings
 
 warnings.filterwarnings('ignore')
-threshold = 0.5
+threshold = 0.3
 lev = sm.Levenshtein()
 jac = sm.Jaccard()
 jaro = sm.Jaro()
