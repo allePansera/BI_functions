@@ -108,9 +108,9 @@ blocking_rules = []
 #      "score": "0.2"}]]
 # matching rules
 matching_rules = [
-        [{"rule": "{}_{}_lev_dist(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.3"},
+        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.2"},
          # vorrei mettere l'exm ma non è disponibile (secondo me perchè ci sono dei valori nulli)
-         {"rule": "{}_{}_lev_dist(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.8"}]
+         {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.5"}]
 ]
 # l attrs to exclude
 omit_l_attrs = ["l_id"]
