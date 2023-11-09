@@ -78,6 +78,8 @@ CAND_SET['r_id'] = "S2_"+CAND_SET['r_id'].astype(str)
 # Creo una var. joint con NomeArt/NomeAlb/NomeCanzone
 for s in SOURCES:
     # chiamo mix la variabile che andrò a creare su entrambe le basi di dati
+    SOURCES[s]['Song_Name'] = SOURCES[s]['Song_Name'].str.replace(r"\(.*?\)", "", regex=True)
+    SOURCES[s]['Song_Name'] = SOURCES[s]['Song_Name'].str.replace(r"\[.*?\]", "", regex=True)
     SOURCES[s]['mix'] = SOURCES[s]['Album_Name']+' '+SOURCES[s]['Artist_Name']+' '+SOURCES[s]['Song_Name']
     SOURCES[s]['AlbumName'] = SOURCES[s]['Album_Name']
     SOURCES[s]['ArtistName'] = SOURCES[s]['Artist_Name']
@@ -108,9 +110,9 @@ blocking_rules = []
 #      "score": "0.2"}]]
 # matching rules
 matching_rules = [
-        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.2"},
+        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.3"},
          # vorrei mettere l'exm ma non è disponibile (secondo me perchè ci sono dei valori nulli)
-         {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.5"}]
+         {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.75"}]
 ]
 # l attrs to exclude
 omit_l_attrs = ["l_id"]
