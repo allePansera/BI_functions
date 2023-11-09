@@ -86,7 +86,7 @@ for s in SOURCES:
     SOURCES[s]['SongName'] = SOURCES[s]['Song_Name']
 
 # query per analizzare i record con SciView
-# SOURCES['S2'].loc[SOURCES['S2']['Sno'] == X]
+# SOURCES['S2'].loc[SOURCES['S2']['id'] == X]
 
 # come prima cosa calcolo il cluster del golden standard
 cluster_gold_standard=EntityMatching.cluster_componenti_connessi(GoldStandard[['l_id','r_id']],
