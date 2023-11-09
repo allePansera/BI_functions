@@ -98,8 +98,6 @@ _VisualizzaDistribuzioneCluster(cluster_gold_standard)
 # visualizzazione dei cluster
 grouped_cluster = VisualizzaCluster(cluster_gold_standard)
 
-# come primo tentativo per eseguire il matching provo ad usare un rules based matcher
-# blocking rules - blocco su fullname
 method = "join_blocker"
 # method = "rule_based_diff_type"
 blocking_keys = ["mix"]
@@ -110,10 +108,11 @@ blocking_rules = []
 #      "score": "0.2"}]]
 # matching rules
 matching_rules = [
-        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.3"},
+        [{"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "SongName", "score": "0.2"},
          # vorrei mettere l'exm ma non è disponibile (secondo me perchè ci sono dei valori nulli)
-         {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.75"}]
+         {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "ArtistName", "score": "0.5"}]
 ]
+
 # l attrs to exclude
 omit_l_attrs = ["l_id"]
 # r attrs to exclude
