@@ -91,6 +91,17 @@ e position, phone_venue
 Quello che possiamo provare a fare, come fatto in precedenza, è provare a cambiare il tipo di combiner passando da
 SimMax a Sim Avg.
 
+[{'value_overlap': 'EXT_JAC_JAC'}, {'value_overlap': 'EXT_JAC_LEV'}, {'label': 'ME'}]
+   MT  TP  FP  FN    P    R    F
+0  28  28   0   0  1.0  1.0  1.0
+Empty DataFrame
+Columns: [A, B, _merge]
+Index: []
+Empty DataFrame
+Columns: [A, B, _merge]
+Index: []
 
+Non potevo chiedere risultato migliore.
+Corrisp. con Symm. Best Match e combiner SimAvg
 """
 

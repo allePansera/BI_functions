@@ -14,7 +14,7 @@ path+'C.csv']
 
 SOURCES = { 'S'+str(i+1) : pd.read_csv(link).astype(str) for i, link in enumerate(src_links) }
 
-ClusterGoldStandard=pd.read_csv(path+ 'ClusterGoldStandard.csv')
+GoldStandard=pd.read_csv(path+ 'ClusterGoldStandard.csv')
 
 GoldStandard.columns=['l_id','r_id']
 
