@@ -133,6 +133,8 @@ Vedo subito un problema legato ai cognoli in quando rischio di avere clienti div
 Inoltre se il codice belfiore lo stimo come un codice cliente non è molto corretto dare così poco peso ad un valore che può idealmente
 essere assimilato ad un codice fiscale (è un paragone con quello che posso considerare come un codice univoco stabile nel tempo)
 
+Codice fiscale del comune di residenza
+
 Provo a re-inserire la regola usata nell'esercizio precedente come base di partenza.
 Ci lavoro sopra e partendo dalla base di partenza precedentemente, che riporto in seguito, lavoro sulla soglia legata a nome e cognome
 
