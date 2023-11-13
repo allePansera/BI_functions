@@ -73,6 +73,14 @@ for i in range(3):
 """
 Risultato ottenuto con lo stable marriage
 
-
+==================================================
+[{'value_overlap': 'SJ'}, {'value_overlap': 'GEN_JAC'}, {'value_overlap': 'EXT_JAC_JAC'}]
+   MT  TP  FP  FN    P       R       F
+0  14  14   0   5  1.0  0.7368  0.8485
+==================================================
+[{'value_overlap': 'JAC'}, {'label': 'ME'}, {'value_overlap': 'EXT_JAC_LEV'}]
+   MT  TP  FP  FN       P       R       F
+0  17  14   3   5  0.8235  0.7368  0.7778
+==================================================
 
 """
