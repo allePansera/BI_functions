@@ -7,16 +7,18 @@ import pandas as pd, random
 
 # BOTTOM-UP
 
+path=''
+path="http://dbgroup.ing.unimore.it/EBI/Bottom1/"
+
 src_links = [
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS1_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS2_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS3_B.csv',
-'http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/CameraS4_B.csv',
-]
+  path + 'S1.csv',
+  path + 'S2.csv',
+  path + 'S3.csv'   ]
 
 SOURCES = { 'S'+str(i+1) : pd.read_csv(link).astype(str) for i, link in enumerate(src_links) }
 
-gold_standard=pd.read_csv('http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/TopDCamera/GoldStandardFull.csv').astype(str)
+gold_standard=pd.read_csv(path +'GoldStandard.csv').astype(str)
+
 gold_standard_m = to_GMM(gold_standard)
 _VisualizzaDistribuzioneCluster(CalcoloDeiCluster(toA_B(gold_standard)))
 LAT = genera_LAT(SOURCES)
@@ -26,9 +28,9 @@ confronta_source_GoldStandard(gold_standard, LAT)
 sim_combinations = []
 # weights = [0.7, 0.15, 0.15]
 weights = []
-corr_method = "TOP_K_3" #STAB_MARR #SYMM_MATCH
+corr_method = "SYMM_MATCH" #STAB_MARR #SYMM_MATCH
 # score =
-score = 'SimMax' #SimMax #"SimMin #SimAvg
+score = 'SimAvg' #SimMax #"SimMin #SimAvg
 x = 10
 y = 3
 # create x possible combination of y different sim. measure
@@ -65,4 +67,30 @@ for i in range(3):
         print(vv_FN)
 
 exit(1)
+
+
+"""
+1 Tentativo:
+
+[{'value_overlap': 'GEN_JAC'}, {'value_overlap': 'EXT_JAC_LEV'}, {'value_overlap': 'EXT_JAC_JAC'}]
+   MT  TP  FP  FN      P    R       F
+0  32  28   4   0  0.875  1.0  0.9333
+               A               B      _merge
+28      S1_place    S2_indirizzo  right_only
+29  S2_indirizzo    S2_posizione  right_only
+30  S2_indirizzo  S3_phone_venue  right_only
+31  S2_indirizzo     S3_position  right_only
+
+Ho 4 FP legati ad una regola molto stringente per la generazione delle corrispondenze
+Andando ad analizzare il gold standard però si può osservare che c'è una buona similarità
+rispetto all'esercizio precedente.
+
+Il mapping è 1-1 con S1 mentre con S2 ed S3 rimane N-1 per, rispettivamente, descrizione, identificativo 
+e position, phone_venue
+
+Quello che possiamo provare a fare, come fatto in precedenza, è provare a cambiare il tipo di combiner passando da
+SimMax a Sim Avg.
+
+
+"""
 

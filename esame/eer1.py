@@ -4,15 +4,17 @@ from ESERCIZI.utils.funzioni_prof import _VisualizzaDistribuzioneCluster, Visual
 import pandas as pd
 from copy import deepcopy
 
-path='http://dbgroup.ing.unimore.it/SIWS/DataIntegration/Esempi/BIKE/'
+path='http://dbgroup.ing.unimore.it/EBI/Cluster/'
+
 
 src_links = [
-path+'BikeA.csv',
-path+'BikeB.csv']
+path+'A.csv',
+path+'B.csv',
+path+'C.csv']
 
 SOURCES = { 'S'+str(i+1) : pd.read_csv(link).astype(str) for i, link in enumerate(src_links) }
 
-GoldStandard=pd.read_csv(path+ 'BikeGS.csv')
+ClusterGoldStandard=pd.read_csv(path+ 'ClusterGoldStandard.csv')
 
 GoldStandard.columns=['l_id','r_id']
 
