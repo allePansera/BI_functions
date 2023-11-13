@@ -57,9 +57,9 @@ blocking_rules = []
 # matching rules
 matching_rules = [
         [
-            {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "mix", "score": "0.5"},
-
-            {"rule": "{}_{}_exm(ltuple, rtuple) == 1", "attr": "CodiceBelfiore", "score": "1"}
+            {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "Cognome", "score": "0.6"},
+            {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "Nome", "score": "0.5"},
+            {"rule": "{}_{}_exm(ltuple, rtuple) == {}", "attr": "CodiceBelfiore", "score": "1"}
             # potrei mettere degli exm
         ]
 ]
@@ -126,67 +126,44 @@ exit(1)
 
 
 """
-La prima regola fornita è
-city_city_lev_sim(ltuple, rtuple)*0.5 + addr_addr_lev_sim(ltuple, rtuple)*0.5 > 0.9
-Non penso sia molto efficace in quanto si basa sul confronto di dati altamente variabili.
+La prima regola fornita dal prof è 
+'Cognome_Cognome_jac_qgm_3_qgm_3(ltuple, rtuple)*0.7 + CodiceBelfiore_CodiceBelfiore_lev_sim(ltuple, rtuple)*0.3 > 0.6'
 
-Proceso come primo tentativo a controllare mix e nazionalità che in teoria non cambiano.
-A livello di regole di matching come primo tentativo procedo impiegando:
+Vedo subito un problema legato ai cognoli in quando rischio di avere clienti diversi con stesso cognome (si pensi al cognome Rossi..)
+Inoltre se il codice belfiore lo stimo come un codice cliente non è molto corretto dare così poco peso ad un valore che può idealmente
+essere assimilato ad un codice fiscale (è un paragone con quello che posso considerare come un codice univoco stabile nel tempo)
 
-[
-        [
-            {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "mix", "score": "0.3"},
-
-            {"rule": "{}_{}_jac_qgm_3_qgm_3(ltuple, rtuple) >= {}", "attr": "Nazionalita", "score": "0.2"}
-            # potrei mettere degli exm
-        ]
-]
-Sono due regole in AND.
-
-Con metodo delle corrispondenze Symmetric Best Match 1-1
-
-Mi aspetto di contenere il numero di FN imposto dal metodo delle corrispond. scelto tenendo basse le soglie nelle regole.
-
-    MT   TP   FP  FN       P       R       F
-0  858  217  641  78  0.2529  0.7356  0.3764
-
-Il problema è legato all'alto numero di FP
-Per ridurre i falsi positivi occorrono delle regole più stringenti per cui passo da una soglia di 0.3 per
-mix ad una soglia di 0.5
-
-Cluster con max numero di elementi: [48, 81, 94]
-    MT   TP   FP  FN       P       R       F
-0  429  288  141   7  0.6713  0.9763  0.7956
-
-Il risultato è decisamente migliore ma posso fare ancora meglio, controllo su Mix e Nazionalita quale 
-può essere il problema con la funzione per visualizzare i FP
-
-Ho ancora problemi legati alla dissimilarità dei cognomi per cui mi conviene alzare la soglia.
-Se non risolto analizzo nome e cognome singolaramente con soglie differenti.
-Provo con mix a 0.7 se non risolvo metto in and nome e cognome con entrambi a 0.7.
-
-    MT   TP  FP  FN       P       R       F
-0  286  232  54  63  0.8112  0.7864  0.7986
-
-Sono saliti molto i Falsi negativi ma l'F score generale è salito.
-
-Analizzando i dati vedo che i FN sono legati a problemi di inserimento.
-E.s.:
-al-mehdi ben slimane,mohamed ben slimane
-nikolay ivanovich paslar,nikolay paslar
-mauor crenna,mauro crenna
-
-Quindi il problema è trovare una giusta soglia in mix dopo aver stabilito se si preferiscono 
-i FN o i FP.
-Si potrebbero fare dei tentativi splittando nome e cognome ma non ho tempo.
-
-
-Vedo che c'è un codice cliente (ipotizzo) che è CodiceBelfiore. Riduco la soglia per il nome+cognome e inserisco in and la regola,
-vediamo se il risultato migliora. Essendo un codice cliente mi aspetto che corrisponda.
+Provo a re-inserire la regola usata nell'esercizio precedente come base di partenza.
+Ci lavoro sopra e partendo dalla base di partenza precedentemente, che riporto in seguito, lavoro sulla soglia legata a nome e cognome
 
     MT   TP   FP  FN       P       R       F
 0  401  290  111   5  0.7232  0.9831  0.8333
 
-Il risultato è il migliore ottenuto. Non ho tempo per analizzare i FP e FN. Si può fare in fase di orale
 
+L'idea di lavorare con i soli codici belfiore potrebbe essere non sufficiente
+in quanto ho nei FP dei dati che hanno stesso codice beliore.
+
+Provo adesso a fare il test indicato in eer1.py in cui splitto il nome ed il cognome per l'analisi.
+
+Siccome il problema è spesso nei cognomi analizzo quello.
+Metto il cognome con soglia a 0.6 e in exm il codice belfiore; le condizioni saranno entrambe in AND.
+
+
+Il risultato direi che sia molto soddisfacente rispetto all'esercizio precedente
+
+    MT   TP  FP  FN       P       R       F
+0  295  287   8   8  0.9729  0.9729  0.9729
+
+Per dare uno sguardo rapido ai FP e FN si evince che la similarità nei cognomi rimane molto elevata e che un tentativo per ridurre
+alcuni casi è considerare anche il nome.
+
+Le date di nascita anche nei FP sono identiche, a meno che ad occhio non mi sia sfuggito qualche caso.
+Ri-eseguo il caso precedente applicando il filtro in matching del nome.
+
+
+Dopo cercherò una soluzione per migliorare i fn
+    MT   TP  FP  FN      P       R       F
+0  223  221   2  74  0.991  0.7492  0.8533
+
+Salgono molto i FN ma non ho tempo per provare ulteriori combinazioni con le soglie.
 """

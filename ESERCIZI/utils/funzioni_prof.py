@@ -566,20 +566,22 @@ def CalcoloDeiCluster(MatchTableCRT):
 
 
 def VisualizzaCluster(Clusters):
-    vClusters = deepcopy(Clusters)
-    vClusters.columns = ['ClusterKey', 'ClusterElement']
-    vClusters['source'] = vClusters['ClusterElement'].astype(str).str[1]
+### NOTA : LA FUNZIONE PRENDE IL NOME DALLA SORGENTE DAI PRIMI CARATTERI
+### DELL'IDENTIFICATIVO DEL RECORD
+### ADEGUARE IN BASE ALL'ESEMPIO !!!
+    vClusters=deepcopy(Clusters)
+    vClusters.columns=['ClusterKey', 'ClusterElement']
+    vClusters['source']=vClusters['ClusterElement'].astype(str).str[0]
 
     def Aggregazione(x):
-        Campi = {
-            '#Sorgenti': x['source'].nunique(),
-            'Sorgenti': x['source'].str.cat(sep=','),
-            '#Record': x['ClusterElement'].nunique(),
-            'Record': x['ClusterElement'].str.cat(sep=',')
-        }
-        return pd.Series(Campi)
-
-    groupedCLUSTERS = vClusters.groupby('ClusterKey').apply(Aggregazione).reset_index()
+      Campi = {
+          '#Sorgenti' :     x['source'].nunique(),
+          'Sorgenti' :     x['source'].str.cat(sep=','),
+          '#Record' :     x['ClusterElement'].nunique(),
+          'Record' :     x['ClusterElement'].str.cat(sep=',')
+          }
+      return pd.Series(Campi)
+    groupedCLUSTERS=vClusters.groupby('ClusterKey').apply(Aggregazione).reset_index()
 
     return groupedCLUSTERS
 

@@ -151,6 +151,8 @@ class BlockingMatching:
         em.set_fk_rtable(match_table, 'r_id')
 
         F = em.get_features_for_matching(A, B, validate_inferred_attr_types=False)
+
+
         brm = em.BooleanRuleMatcher()
         rules_list = []
         for rules_inner_list in rules:
